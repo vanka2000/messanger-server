@@ -2,17 +2,17 @@ import mongoose from "mongoose";
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 
+
 // функция получения юзеров
-const getAllUsers = (req, res, next) => {
+const getAllUsers = (socket, userID) => {
+    console.log(userID);
     // поиск юзера на основании модели
     User.find({})
         .then((user) => {
-            res.send(user)
+            socket.emit('getUsers', user)
         })
         .catch(err => {
-            res.send('Не удалось найти юзера')
-            // чтобы в случае ошибки - работа сервера не останавливалась
-            next()
+            socket.emit('getUsers', "Щшибка получения юзеров")
         })
 }
 
@@ -40,15 +40,14 @@ const patchUser = (req, res, next)  => {                //изменить юз�
 }       
 
 
-const login = (req, res, next) => {        //функция для авторизации
-    const {email, password} = req.body
+const login = (msg, socket) => {        //функция для авторизации
+    const {email, password} = msg
     User.findByUserWithLogin(email, password)    //передаем созданный метод модели
     .then(user => {
-            console.log(user);
-            const token = jwt.sign({_id : user._id}, 'dev-secret', {expiresIn : '7d'})     //создаем токен для безопасности
-            res.cookie('jwt', token)
-            return res.status(200).send({token})
-        }).catch(() => next('Пользователь не найден'))
+        const token = jwt.sign({_id : user._id}, 'dev-secret', {expiresIn : '7d'})     //создаем токен для безопасности
+        socket.emit('auth', token)
+    })
+    .catch(() => socket.emit('auth', 'Пользователь не найден'))
 }
 
 

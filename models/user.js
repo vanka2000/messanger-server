@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
         // валидация (если нужна)
         validate : {
             validator : (email) => isEmail(email),
-            message : ({value}) => `${value} - неккоректный, попробуйте другой email`
+            message : ({value}) =>  `${value} - неккоректный, попробуйте другой email`
         }
     },
     userID : {
@@ -58,8 +58,8 @@ userSchema.statics.findByUserWithLogin = function (email, password) {     //stat
     return this.findOne({email,password})  //ищем юзера по email и паролю (эти данные для того,чтобы юзер мог войти только под своими данными)
         .select('+password') // проверяем введен ли пароль
         .then((user) => {
-            console.log(user);
-            if(!user) throw new Error('Неверная почта или пароль')
+            // console.log(user);
+            // if(!user) throw new Error('Неверная почта или пароль')
             return user
         })
  }

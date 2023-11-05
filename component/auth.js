@@ -1,14 +1,13 @@
 import jwt from "jsonwebtoken"
 
-const auth = (req, res, next) => {   //создание функции 
-    const {authorization} = req.headers    //получаем поле authorization из заголовков
-    let token 
-    if(authorization){         //расшифровка нашего токена
-        token = authorization.replace('jwt=', '')   // убираем строчку jwt из токена,на всякий случай
+const auth = (token, socket) => {   //создание функции 
+      //получаем поле authorization из заголовков 
+    if(token){         //расшифровка нашего токена
+        token = token.replace('jwt=', '')   // убираем строчку jwt из токена,на всякий случай
     }
 
     if(!token){ 
-        return next('No token')
+        return socket.emit('errorAuth','No token')
     }
 
     let result 
@@ -16,11 +15,10 @@ const auth = (req, res, next) => {   //создание функции
         result = jwt.verify(token, 'dev-secret')   // верифицируем токен (раскодируем)
     }
     catch{ 
-        return next('необходимо пройти Аутендификацию')
+        return socket.emit('errorAuth', 'необходимо пройти Аутендификацию')
     }
-
-    req.user = result
-    return next()
+    
+    return result
 }
 
 export { auth }
