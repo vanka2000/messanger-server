@@ -1,11 +1,11 @@
 import express from "express";
-import { getAllUsers, createUser, patchUser, login, logout, getCurrentUser , deleteUser, upload} from "../controller/user.js";      //Импортируем контроллеры
+import { getAllUsers, createUser, patchUser, login, logout, getCurrentUser , deleteUser, } from "../controller/user.js";      //Импортируем контроллеры
 import { auth } from "../component/auth.js";
 
 
 // const fileMiddleware = require('../middleware/file.js')
 
-const userRouter = express.Router()
+// const userRouter = express.Router()
 
 
 function actionIO (socket) {
@@ -32,6 +32,11 @@ function actionIO (socket) {
         logout(userID, socket)
     })
 
+    socket.on('addFriend', (msg) => {
+        const userID =  auth(msg.token, socket)
+        patchUser(msg, userID, socket)
+    })
+
 }
 
 
@@ -48,9 +53,9 @@ function actionIO (socket) {
 // userRouter.get('/', () => {console.log('Connect')})
 
 
-// export default userRouter
+export {actionIO}
 
-export default actionIO
+
 
 
 //роутс - для ответов на запросы и запуск контроллеров в ответе

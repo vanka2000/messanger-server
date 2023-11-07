@@ -48,7 +48,11 @@ const userSchema = new mongoose.Schema({
         required : true,
         unique : false,
     },
-    
+    activeToken : {
+        type : String,
+        required : false,
+        unique : true
+    }  
 })
 
 
@@ -63,6 +67,16 @@ userSchema.statics.findByUserWithLogin = function (email, password) {     //stat
             return user
         })
  }
+
+ userSchema.statics.tokenActivation = (token, user) => {
+    // console.log(user);
+    return this.findByIdAndUpdate(user._id, {activeToken : token})
+     .then((user) => {
+        console.log(user);
+      return  user
+     }).catch(err => console.log(err))
+ }
+
 export default mongoose.model('User', userSchema)
 
 

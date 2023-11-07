@@ -2,37 +2,38 @@ import mongoose from "mongoose";
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 
-
 // функция получения юзеров
 const getAllUsers = (socket, userID) => {
-    console.log(userID);
-    // поиск юзера на основании модели
     User.find({})
         .then((user) => {
             socket.emit('getUsers', user)
         })
         .catch(err => {
-            socket.emit('getUsers', "Не удалось найти юзера")
+            socket.emit('getUsers', "Ошибка получения юзеров")
         })
 }
 
-const createUser = (msg, socket) => {        //функция создания пользователя в базе данных
-    const {name, email, password} = msg
+const createUser = (req, res, next) => {        //функция создания пользователя в базе данных
+    const {name, email, password} = req.body
     const userID =  new mongoose.Types.ObjectId()   //генерация дополнительного ObjectID
     User.create({name, email, password, userID})
-        .then((user) => socket.emit('createUser',user))
-        .catch(e => socket.emit('Не удалось создать юзера: ' + e))
+        .then((user) => res.send(user))
+        .catch(e => {
+            res.send('Не удалось создать юзера: ' + e)
+            next()
+        })
 }
 
 
-const patchUser = (req, res, next)  => {                //изменить юзеру настройки (имя и тд)
-    const {name, age, salary} = req.body
-    const _id = req.user
-    User.findByIdAndUpdate(_id, {name, age, salary})
-        .then((user) => res.send(user))
+const patchUser = (msg, _id, socket)  => {                //изменить юзеру настройки (имя и тд)
+    const {name, age, salary, friends} = msg
+    User.findByIdAndUpdate(_id, {name, age, salary, friends})
+        .then((user) => {
+            console.log(user);
+            socket.emit('addFrend', user)
+        })
         .catch(err => {
-            res.send('Не удалось обновить данные юзера: ' + err)
-            next()
+            socket.emit('addFrend', "Пользователь не найден")
         })
 }       
 
@@ -43,36 +44,35 @@ const login = (msg, socket) => {        //функция для авториза
     .then(user => {
         const token = jwt.sign({_id : user._id}, 'dev-secret', {expiresIn : '7d'})     //создаем токен для безопасности
         socket.emit('auth', token)
+        // User.tokenActivation(token, user)
+            // .then((user) => socket.emit('auth', user))
+            // .catch((err) => socket.emit('auth', err))
     })
     .catch(() => socket.emit('auth', 'Пользователь не найден'))
 }
 
 
 
-const logout = (_id, socket) => {     //функция для выхода из аккаунта
-    socket.emit('logout', 'Вы вышли')
+
+
+
+const logout = (req, res, next) => {     //функция для выхода из аккаунта
+    res.clearCookie('jwt')                   //удаление куков,при выходе из аккаунта
+    res.status(200).send({message: "Вы вышли"})
 }
 
 
 const getCurrentUser = (socket, _id) => {  //функция для получения данных юзера 
     User.findById(_id)
         .then(user => socket.emit('getMe', user))
-        .catch(err => socket.emit('getMe', 'Error: ' + err))
+        .catch(err => socket.emit('getMe', 'Пользователь не найден'))
 }
 
 
-const deleteUser = (msg, socket) => {
+const deleteUser = (req,res,next) => {
     User.deleteOne({name,email,password,userID})
-    res.status(200).socket.emit('deleteUser', token)
-}
-const upload = (req,res) => {
-    try{
-        if(req.file){
-            res.json(req.file)
-        }
-    } catch (error) {
-        console.log(error)
-    }
+    res.status(200).send({message:"Вы удалили аккаунт"})
+
 }
 
 
@@ -84,8 +84,7 @@ export {
     login,
     logout,
     getCurrentUser,
-    deleteUser,
-    upload
+    deleteUser
 }
 
 
