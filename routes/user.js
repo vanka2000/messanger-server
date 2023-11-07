@@ -1,6 +1,9 @@
 import express from "express";
-import { getAllUsers, createUser, patchUser, login, logout, getCurrentUser , deleteUser} from "../controller/user.js";      //Импортируем контроллеры
+import { getAllUsers, createUser, patchUser, login, logout, getCurrentUser , deleteUser, upload} from "../controller/user.js";      //Импортируем контроллеры
 import { auth } from "../component/auth.js";
+
+
+// const fileMiddleware = require('../middleware/file.js')
 
 const userRouter = express.Router()
 

@@ -64,7 +64,15 @@ const getCurrentUser = (socket, _id) => {  //функция для получе�
 const deleteUser = (msg, socket) => {
     User.deleteOne({name,email,password,userID})
     res.status(200).socket.emit('deleteUser', token)
-
+}
+const upload = (req,res) => {
+    try{
+        if(req.file){
+            res.json(req.file)
+        }
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 
@@ -76,7 +84,8 @@ export {
     login,
     logout,
     getCurrentUser,
-    deleteUser
+    deleteUser,
+    upload
 }
 
 

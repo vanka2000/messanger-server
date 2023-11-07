@@ -31,7 +31,11 @@ io.on('connection', (socket) => {
 app.use(express.json())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended : true}))
+// app.use(express.json({extended: true}))    // новая строка
+// app.use('/images', express.static(path.join(__dirname, 'images'))) // новая строка
 app.use(cors())
+
+
 
 // подключаем роуты через отдельный файл
 // app.use('/', userRouter)
