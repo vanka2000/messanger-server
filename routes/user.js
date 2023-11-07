@@ -15,7 +15,25 @@ function actionIO (socket) {
         getAllUsers(socket, userID)
     })
 
+    socket.on('getMe', (token) => {
+        const userID =  auth(token, socket)
+        getCurrentUser(socket, userID)
+    })
+
+    socket.on('createUser', (msg) => {
+        createUser(msg, socket)
+    })
+
+    socket.on('logout', (token) => {
+        const userID =  auth(token, socket)
+        logout(userID, socket)
+    })
+
 }
+
+
+
+
 
 // userRouter.get('/allUsers', getAllUsers)
 // userRouter.post('/signUp', createUser)
