@@ -16,7 +16,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/Users')
 
 
 const app = express();
-const server = createServer()
+const server = createServer(app)
 const io = new Server(server,{
     cors : {
         origin : 'http://localhost:3001'
@@ -26,19 +26,10 @@ const io = new Server(server,{
 
 io.on('connection', (socket) => {
     actionIO(socket)
+    
 })
 
-app.use(express.json())
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended : true}))
-// app.use(express.json({extended: true}))    // новая строка
-// app.use('/images', express.static(path.join(__dirname, 'images'))) // новая строка
-app.use(cors())
 
-
-
-// подключаем роуты через отдельный файл
-// app.use('/', userRouter)
 server.listen(3000, () => console.log('OK '))
 
 

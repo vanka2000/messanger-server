@@ -1,5 +1,6 @@
 import express from "express";
-import { getAllUsers, createUser, patchUser, login, logout, getCurrentUser , deleteUser, } from "../controller/user.js";      //Импортируем контроллеры
+import { getAllUsers, createUser, addChat, login, getCurrentUser , } from "../controller/user.js";      //Импортируем контроллеры
+import { getChats, getMessages } from "../controller/chat.js";
 import { auth } from "../component/auth.js";
 
 
@@ -14,27 +15,47 @@ function actionIO (socket) {
     })
 
     socket.on('getUsers', (token) => {
-        const userID =  auth(token, socket)
-        getAllUsers(socket, userID)
+        if(auth(token, socket)){
+            getAllUsers(socket)
+        }
     })
 
     socket.on('getMe', (token) => {
-        const userID =  auth(token, socket)
-        getCurrentUser(socket, userID)
+        const _id = auth(token, socket)
+        if(_id){
+            getCurrentUser(socket, _id)
+        }
     })
 
     socket.on('createUser', (msg) => {
         createUser(msg, socket)
     })
 
-    socket.on('logout', (token) => {
-        const userID =  auth(token, socket)
-        logout(userID, socket)
+    // socket.on('logout', (token) => {
+    //     if(auth(token, socket)){
+    //         logout(socket)        
+    //     }
+    // })
+
+    socket.on('addFriend', ({token, user}) => {
+        const _id = auth(token, socket)
+        if(_id){
+            addChat(_id, user, socket)
+        }
     })
 
-    socket.on('addFriend', (msg) => {
-        const userID =  auth(msg.token, socket)
-        patchUser(msg, userID, socket)
+    socket.on('getChats', ({idChats, token}) => {
+        const _id = auth(token, socket)
+        if(_id){
+            getChats(socket, _id, idChats)
+        }
+    })
+
+    socket.on('getMessages', ({idChat, token}) => {
+        const _id = auth(token, socket)
+        if(_id){
+            getMessages(socket, idChat)
+        }
     })
 
 }

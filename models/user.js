@@ -1,5 +1,5 @@
-import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
+import { ObjectId } from "mongodb";
 import isEmail from "validator/lib/isEmail.js";
 
 // модель юзера
@@ -11,11 +11,6 @@ const userSchema = new mongoose.Schema({
         required : true,
         // проверка на уникальность
         unique : true,
-    },
-    age : {
-        type : Number,
-        required : false,
-        unique : false
     },
     salary : {
         type : Number,
@@ -32,12 +27,12 @@ const userSchema = new mongoose.Schema({
             message : ({value}) =>  `${value} - неккоректный, попробуйте другой email`
         }
     },
-    userID : {
-        type : ObjectId,     //тип АЙдишник монгоДБ
-        required : false,      //не обязательно для ввода
-        unique : true,    //уникальность
-    },
-    friends : {
+    // userID : {
+    //     type : ObjectId,     //тип АЙдишник монгоДБ
+    //     required : false,      //не обязательно для ввода
+    //     unique : true,    //уникальность
+    // },
+    chat : {
         type : Array,
         required : false,
         default : [],   // по дефолту пустой массив
@@ -48,11 +43,6 @@ const userSchema = new mongoose.Schema({
         required : true,
         unique : false,
     },
-    activeToken : {
-        type : String,
-        required : false,
-        unique : true
-    }  
 })
 
 
@@ -68,14 +58,7 @@ userSchema.statics.findByUserWithLogin = function (email, password) {     //stat
         })
  }
 
- userSchema.statics.tokenActivation = (token, user) => {
-    // console.log(user);
-    return this.findByIdAndUpdate(user._id, {activeToken : token})
-     .then((user) => {
-        console.log(user);
-      return  user
-     }).catch(err => console.log(err))
- }
+
 
 export default mongoose.model('User', userSchema)
 
