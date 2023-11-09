@@ -1,6 +1,6 @@
 import express from "express";
 import { getAllUsers, createUser, addChat, login, getCurrentUser , } from "../controller/user.js";      //Импортируем контроллеры
-import { getChats, getMessages } from "../controller/chat.js";
+import { getChats, getMessages, addMessage } from "../controller/chat.js";
 import { auth } from "../component/auth.js";
 
 
@@ -55,6 +55,13 @@ function actionIO (socket) {
         const _id = auth(token, socket)
         if(_id){
             getMessages(socket, idChat)
+        }
+    })
+
+    socket.on('addMessage', ({idChat, user, token, message}) => {
+        const _id = auth(token, socket)
+        if(_id){
+            addMessage(idChat, user, message, socket)
         }
     })
 

@@ -28,11 +28,10 @@ const addChat = (_id, user, socket)  => {
     User.findOne({name : user}).then((friend) => {  
         User.findById(_id).then((user) => {
             Chat.create({members : [user, friend], messages : []})
-                .then(chat => {   
+                .then(chat => {  
+                    friend.chat.push(chat._id)
                     user.chat.push(chat._id)
-                    user.save().then(() => {
-                        socket.emit('addFriend', {chat})
-                    })
+                    Promise.all([friend.save(), user.save()]).then(() => socket.emit('addFriend', {chat}))
                 })
                 .catch(err => socket.emit('addFriend', {message : "Ошибка создания чата", status : 500, err}))
         })
