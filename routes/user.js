@@ -29,6 +29,7 @@ function actionIO (socket) {
 
     socket.on('createUser', (msg) => {
         createUser(msg, socket)
+        
     })
 
     // socket.on('logout', (token) => {
@@ -62,6 +63,7 @@ function actionIO (socket) {
         const _id = auth(token, socket)
         if(_id){
             addMessage(idChat, user, message, socket)
+            console.log(socket.connected)
         }
     })
 

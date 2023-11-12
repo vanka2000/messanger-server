@@ -31,7 +31,10 @@ const addChat = (_id, user, socket)  => {
                 .then(chat => {  
                     friend.chat.push(chat._id)
                     user.chat.push(chat._id)
-                    Promise.all([friend.save(), user.save()]).then(() => socket.emit('addFriend', {chat}))
+                    Promise.all([friend.save(), user.save()]).then(() => {
+                        socket.local.emit('addFriend', {chat})
+                        socket.emit('addFriend', {chat})
+                    })
                 })
                 .catch(err => socket.emit('addFriend', {message : "Ошибка создания чата", status : 500, err}))
         })
