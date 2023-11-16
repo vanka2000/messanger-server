@@ -9,7 +9,7 @@ import { Server } from 'socket.io';
 
 //Установка соединения к MongoDB
 // настройки подключения к MongoDB. В первом параметре указывается localhost и стандартный для MongoDB порт 27017, а во втором параметре - настройки подключения:
-mongoose.connect('mongodb://127.0.0.1:27017/Users')
+mongoose.connect('mongodb://127.0.0.1:27017/test')
 .then((e) => console.log('connected'))
 .catch((err) => console.log(err))
 

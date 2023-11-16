@@ -1,6 +1,6 @@
 import express from "express";
-import { getAllUsers, createUser, addChat, login, getCurrentUser , } from "../controller/user.js";      //Импортируем контроллеры
-import { getChats, getMessages, addMessage } from "../controller/chat.js";
+import { getAllUsers, createUser, addChat, login, getCurrentUser , logout } from "../controller/user.js";      //Импортируем контроллеры
+import { getChats, getMessages, addMessage, deleteChat } from "../controller/chat.js";
 import { auth } from "../component/auth.js";
 
 
@@ -32,11 +32,16 @@ function actionIO (socket) {
         
     })
 
-    // socket.on('logout', (token) => {
-    //     if(auth(token, socket)){
-    //         logout(socket)        
-    //     }
-    // })
+    socket.on('deleteChat', ({chat, token}) => {
+        deleteChat(chat, socket)
+    })
+
+    socket.on('logout', (token) => {
+        const _id = auth(token, socket) 
+        if(_id){
+            logout(socket,_id)        
+        }
+    })
 
     socket.on('addFriend', ({token, user}) => {
         const _id = auth(token, socket)

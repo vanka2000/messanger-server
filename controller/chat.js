@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Chat from "../models/chat.js";
+import User from "../models/user.js"
 
 const getChats = (socket, id, idChats) => {
     Chat.find({idChats})
@@ -17,7 +18,7 @@ const getMessages = (socket, idChat) => {
 }
 
 const addMessage = (idChat, user, message, socket) => {
-    return Chat.findById({_id : idChat})
+    Chat.findById({_id : idChat})
         .then((chat) => {
             chat.messages.push({user, message})
             chat.save()  
@@ -27,5 +28,22 @@ const addMessage = (idChat, user, message, socket) => {
         .catch(err => socket.emit('getMessages', {message : "Ошибка добавления сообщения", status : 500, err}))
 }
 
+const deleteChat = (chat, socket) => {
+    Chat.findByIdAndDelete(chat._id)
+        .then(() => {
+           chat.members.map(item => User.findById(item._id)
+           .then((user) => {
+               console.log(user.chat);
+               const index = user.chat.indexOf(chat._id)
+               console.log(index)
+               if(index >= 0) user.chat.splice(index, 1)
+               user.save()
+               socket.emit('deleteChat', {id : chat._id})
+           })
+           )
+        })
+        .catch(err => socket.emit('deleteChat', {message : "Ошибка удаления чата", status : 500, err}))
+}
 
-export { getChats, getMessages, addMessage }
+
+export { getChats, getMessages, addMessage, deleteChat }

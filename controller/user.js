@@ -53,10 +53,14 @@ const login = (msg, socket) => {        //функция для авториза
 }
 
 
-// const logout = (req, res, next) => {     //функция для выхода из аккаунта
-//     res.clearCookie('jwt')                   //удаление куков,при выходе из аккаунта
-//     res.status(200).send({message: "Вы вышли"})
-// }
+const logout = (socket,_id) => {     //функция для выхода из аккаунта
+    console.log(_id)
+    User.findById(_id._id)
+    .then(user => {
+        socket.emit('logout', {msg})
+    })
+    .catch(err => socket.emit('logout', {message : "Не удалось выйти", status : 500, err}))
+}
 
 const getCurrentUser = (socket, _id,) => {  //функция для получения данных юзера 
     User.findById(_id)
@@ -78,7 +82,7 @@ export {
     createUser,
     addChat,
     login,
-    // logout,
+    logout,
     getCurrentUser,
     // deleteUser
 }
