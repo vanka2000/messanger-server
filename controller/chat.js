@@ -1,13 +1,21 @@
 import mongoose from "mongoose";
 import Chat from "../models/chat.js";
 import User from "../models/user.js"
+import chat from "../models/chat.js";
 
 const getChats = (socket, id, idChats) => {
-    Chat.find({idChats})
-        .then((chat) => {
-            socket.emit('getChats', {chats : chat}) 
-        })
-        .catch(err => socket.emit('getChats', {message : "Ошибка получения чатов", status : 500, err}))
+    
+    Chat.find({_id : {$in : idChats}})
+            .then((chats) => socket.emit('getChats', {chats}))
+            .catch(err => socket.emit('getChats', {message : "Ошибка получения чатов", status : 500, err}))
+    
+    
+    
+    // idChats.map((idChat) => {
+    //     Chat.findById({_id : idChat})
+    //         .then((chat) => socket.emit('getChats', {chats : chat}))
+    //         .catch(err => socket.emit('getChats', {message : "Ошибка получения чатов", status : 500, err}))
+    // })
 }
 
 
@@ -35,10 +43,10 @@ const deleteChat = (chat, socket) => {
            .then((user) => {
                console.log(user.chat);
                const index = user.chat.indexOf(chat._id)
-               console.log(index)
                if(index >= 0) user.chat.splice(index, 1)
                user.save()
                socket.emit('deleteChat', {id : chat._id})
+               socket.local.emit('deleteChat', {id : chat._id})
            })
            )
         })
