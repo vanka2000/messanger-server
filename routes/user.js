@@ -50,10 +50,10 @@ function actionIO (socket) {
         }
     })
 
-    socket.on('getChats', ({idChats, token}) => {
+    socket.on('getChats', ({token}) => {
         const _id = auth(token, socket)
         if(_id){
-            getChats(socket, _id, idChats)
+            getChats(socket, _id)
         }
     })
 

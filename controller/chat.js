@@ -4,18 +4,11 @@ import User from "../models/user.js"
 import chat from "../models/chat.js";
 
 const getChats = (socket, id, idChats) => {
-    
-    Chat.find({_id : {$in : idChats}})
-            .then((chats) => socket.emit('getChats', {chats}))
-            .catch(err => socket.emit('getChats', {message : "Ошибка получения чатов", status : 500, err}))
-    
-    
-    
-    // idChats.map((idChat) => {
-    //     Chat.findById({_id : idChat})
-    //         .then((chat) => socket.emit('getChats', {chats : chat}))
-    //         .catch(err => socket.emit('getChats', {message : "Ошибка получения чатов", status : 500, err}))
-    // })
+    User.findById(id).then((user) => {
+        Chat.find({_id : {$in : user.chat}})
+                .then((chats) => socket.emit('getChats', {chats}))
+                .catch(err => socket.emit('getChats', {message : "Ошибка получения чатов", status : 500, err}))
+    })
 }
 
 
